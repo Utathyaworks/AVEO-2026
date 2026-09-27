@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="AVEO 2026: ICVGIP workshop on adapting vision foundation and embedding models for Earth observation at scale. 21 December 2026, ISI Kolkata.">
+<title>AVEO 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#F2F5F2; --paper-2:#E7ECE8; --ink:#14211E; --ink-2:#3E4B47; --ink-3:#6B7975;
+    --line:#CBD5D0; --accent:#1E7F8A; --accent-ink:#0F5C65; --accent-soft:#D8ECEE;
+    --flood:#2F63A8; --forest:#4B7B3E; --ice:#C9DEE6; --ice-ink:#4E6E7C; --bare:#B7895A;
+    --tile-w:#BFD3DF; --tile-v:#5E8A4F; --tile-i:#E4EEF2; --tile-b:#C7A27A; --tile-u:#9AA5A0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#101917; --paper-2:#182320; --ink:#EAF0EC; --ink-2:#B7C4BE; --ink-3:#7F8F89;
+      --line:#2C3A35; --accent:#4FB3BE; --accent-ink:#8ED5DC; --accent-soft:#163338;
+      --flood:#6C9BDD; --forest:#8ABE79; --ice:#2A3E47; --ice-ink:#B9D2DD; --bare:#D2A574;
+      --tile-w:#2D4A5C; --tile-v:#3D6B33; --tile-i:#9FB9C4; --tile-b:#7A5E3F; --tile-u:#3C4744;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#101917; --paper-2:#182320; --ink:#EAF0EC; --ink-2:#B7C4BE; --ink-3:#7F8F89;
+    --line:#2C3A35; --accent:#4FB3BE; --accent-ink:#8ED5DC; --accent-soft:#163338;
+    --flood:#6C9BDD; --forest:#8ABE79; --ice:#2A3E47; --ice-ink:#B9D2DD; --bare:#D2A574;
+    --tile-w:#2D4A5C; --tile-v:#3D6B33; --tile-i:#9FB9C4; --tile-b:#7A5E3F; --tile-u:#3C4744;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent-ink);text-decoration:none}
+  a:hover{text-decoration:underline;text-underline-offset:3px}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .mono{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:"Instrument Serif",Georgia,"Times New Roman",serif;font-weight:400;line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.01em}
+  h2{font-size:clamp(34px,4.2vw,48px)}
+  h3{font-size:26px}
+  p{margin:0}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+  .lede{font-size:19px;line-height:1.55;color:var(--ink-2);max-width:62ch}
+  .measure{max-width:66ch}
+
+  /* nav */
+  .nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:60px}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:600;font-size:14px;letter-spacing:.02em}
+  .brand-sub{font-weight:400;color:var(--ink-3)}
+  .brand i{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .links{display:flex;gap:22px;font-size:14px;overflow-x:auto;scrollbar-width:none}
+  .links a{color:var(--ink-2);white-space:nowrap}
+  .links a:hover{color:var(--ink);text-decoration:none}
+  .cta{background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:500;white-space:nowrap}
+  .cta:hover{text-decoration:none;background:var(--accent-ink);color:#fff}
+
+  /* hero */
+  .hero{padding:64px 0 40px}
+  .hero .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center}
+  .hero h1{font-size:clamp(44px,6vw,78px)}
+  .hero h1 em{font-style:italic;color:var(--accent-ink)}
+  .hero .sub{margin-top:22px}
+  .hero .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;font-size:14px;font-weight:500;border:1px solid var(--ink)}
+  .btn.primary{background:var(--ink);color:var(--paper)}
+  .btn.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff;text-decoration:none}
+  .btn.ghost{color:var(--ink)}
+  .btn.ghost:hover{background:var(--paper-2);text-decoration:none}
+  .mosaic{position:relative;aspect-ratio:1/1;border:1px solid var(--line);background:var(--paper-2);overflow:hidden}
+  .mosaic canvas{display:block;width:100%;height:100%}
+  .mosaic .legend{position:absolute;left:12px;bottom:12px;display:flex;gap:10px;flex-wrap:wrap;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:color-mix(in srgb,var(--paper) 86%,transparent);padding:8px 10px;border:1px solid var(--line)}
+  .legend span{display:inline-flex;align-items:center;gap:6px;color:var(--ink-2)}
+  .legend b{width:10px;height:10px;display:inline-block}
+
+  /* mission strip */
+  .strip{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:32px}
+  .strip .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
+  .strip div{padding:14px 16px 14px 0;border-right:1px solid var(--line);font-size:12.5px;letter-spacing:.04em}
+  .strip div + div{padding-left:16px}
+  .strip div:last-child{border-right:0}
+  .strip small{display:block;color:var(--ink-3);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}
+
+  /* sections */
+  section{padding:72px 0;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  .head{display:grid;grid-template-columns:200px 1fr;gap:32px;margin-bottom:36px;align-items:end}
+  .head .eyebrow{padding-bottom:8px}
+  @media (max-width:800px){.head{grid-template-columns:1fr;gap:10px}}
+
+  /* domains */
+  .domains{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}
+  .dom{padding:26px 24px 28px;border-right:1px solid var(--line);position:relative}
+  .dom:last-child{border-right:0}
+  .dom::before{content:"";position:absolute;left:0;top:0;right:0;height:6px;background:var(--dc)}
+  .dom .coord{font-size:11.5px;color:var(--ink-3);letter-spacing:.06em;margin-top:6px}
+  .dom h3{margin-top:14px}
+  .dom p{margin-top:12px;color:var(--ink-2);font-size:15px}
+  .dom ul{margin:14px 0 0;padding-left:18px;color:var(--ink-2);font-size:14.5px}
+  .dom li{margin:3px 0}
+  .dom.flood{--dc:var(--flood)} .dom.forest{--dc:var(--forest)} .dom.cryo{--dc:var(--ice-ink)}
+
+  /* two-col about */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+  .cols p + p{margin-top:16px}
+  .quiet{color:var(--ink-2)}
+  .promises{border-left:2px solid var(--accent);padding-left:20px;display:grid;gap:18px}
+  .promises strong{display:block;font-family:"Instrument Serif",serif;font-size:24px;font-weight:400;line-height:1.15}
+  .promises span{color:var(--ink-2);font-size:15px}
+
+  /* topics */
+  .topics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--ink)}
+  .tg{padding:22px 20px 26px 0;border-right:1px solid var(--line)}
+  .tg + .tg{padding-left:20px}
+  .tg:last-child{border-right:0}
+  .tg h4{margin:0 0 12px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink);font-weight:600}
+  .tg ul{list-style:none;margin:0;padding:0;font-size:14.5px;color:var(--ink-2)}
+  .tg li{padding:6px 0;border-bottom:1px dashed var(--line)}
+  .tg li:last-child{border-bottom:0}
+
+  /* dates track */
+  .track{position:relative;display:grid;grid-template-columns:repeat(5,1fr);margin-top:8px}
+  .track::before{content:"";position:absolute;left:0;right:0;top:9px;height:1px;background:var(--ink)}
+  .tk{position:relative;padding-top:28px;padding-right:16px}
+  .tk::before{content:"";position:absolute;top:3px;left:0;width:13px;height:13px;border-radius:50%;background:var(--paper);border:2px solid var(--ink)}
+  .tk.now::before{background:var(--accent);border-color:var(--accent)}
+  .tk .d{font-size:22px;font-family:"Instrument Serif",serif;line-height:1}
+  .tk .l{font-size:13.5px;color:var(--ink-2);margin-top:6px}
+  .tk .t{font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+  .note{margin-top:22px;font-size:13.5px;color:var(--ink-3)}
+
+  /* cfp */
+  .cfp{display:grid;grid-template-columns:1.1fr .9fr;gap:48px}
+  .specs{border:1px solid var(--line)}
+  .specs div{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14.5px}
+  .specs div:last-child{border-bottom:0}
+  .specs b{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+  ol.steps{margin:18px 0 0;padding-left:20px;color:var(--ink-2)}
+  ol.steps li{margin:8px 0}
+
+  /* challenge */
+  .chal{background:var(--paper-2);border:1px solid var(--line);padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:36px}
+  .chal ul{margin:12px 0 0;padding-left:18px;color:var(--ink-2)}
+  .tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--accent);color:var(--accent-ink);border-radius:3px}
+
+  /* people */
+  .people{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
+  .person{padding-top:16px;border-top:1px solid var(--ink)}
+  .photo{position:relative;width:100%;aspect-ratio:4/5;background:var(--paper-2);overflow:hidden;margin-bottom:14px;border:1px solid var(--line)}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.9)}
+  .photo .init{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Instrument Serif",serif;font-size:64px;color:var(--ink-3);letter-spacing:-.02em}
+  .photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--accent)}
+  .photo.has img + .init{display:none}
+  .person .name{font-family:"Instrument Serif",serif;font-size:24px;line-height:1.1}
+  .person .aff{font-size:14px;color:var(--ink-2);margin-top:6px}
+  .person .role{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:8px}
+  .person .st{margin-top:8px}
+  .st{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  .st::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bare);margin-right:6px;vertical-align:1px}
+
+  /* schedule */
+  .sched{width:100%;border-collapse:collapse;font-size:15px}
+  .sched td{padding:12px 12px 12px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .sched td:first-child{font-family:"IBM Plex Mono",monospace;font-size:13px;white-space:nowrap;color:var(--ink-3);width:120px}
+  .sched td.k{font-weight:500}
+  .sched tr.brk td{color:var(--ink-3)}
+
+  /* venue */
+  .venue{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+  .vcard{border:1px solid var(--line);padding:24px}
+  .vcard .big{font-family:"Instrument Serif",serif;font-size:30px;line-height:1.1}
+  .vcard p{margin-top:8px;color:var(--ink-2)}
+  .vcard .coord{margin-top:16px;font-size:12px;color:var(--ink-3);letter-spacing:.06em}
+
+  footer{padding:36px 0 48px;color:var(--ink-3);font-size:13px;border-top:1px solid var(--ink)}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+  @media (max-width:900px){
+    .hero .wrap{grid-template-columns:1fr}
+    .mosaic{max-width:440px}
+    .domains,.topics,.cols,.cfp,.chal,.venue{grid-template-columns:1fr}
+    .dom,.tg{border-right:0;border-bottom:1px solid var(--line)}
+    .dom:last-child,.tg:last-child{border-bottom:0}
+    .tg + .tg{padding-left:0}
+    .track{grid-template-columns:1fr 1fr;gap:20px}
+    .track::before{display:none}
+    .links{display:none}
+  }
+  /* stat band */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ink);margin-top:40px}
+  .stat{padding:22px 22px 24px;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:0}
+  .stat .n{font-family:"Instrument Serif",serif;font-size:56px;line-height:.95;letter-spacing:-.02em}
+  .stat .n em{font-style:italic;color:var(--accent-ink)}
+  .stat .l{margin-top:10px;font-size:13.5px;color:var(--ink-2)}
+  /* topic chips */
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{padding:10px 16px;border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--ink-2);background:var(--paper);transition:all .15s ease;cursor:default}
+  .chip:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft);transform:translateY(-1px)}
+  .chip.big{font-family:"Instrument Serif",serif;font-size:20px;color:var(--ink);border-color:var(--ink)}
+  @media (max-width:900px){.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat{border-bottom:1px solid var(--line)}.stat:nth-child(n+3){border-bottom:0}}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.chip{transition:none}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><i></i>AVEO 2026 <span class="brand-sub">@ ICVGIP</span></a>
+    <div class="links">
+      <a href="#about">About</a>
+      <a href="#domains">Domains</a>
+      <a href="#topics">Topics</a>
+      <a href="#dates">Dates</a>
+      <a href="#cfp">Call for Papers</a>
+      <a href="#challenge">Challenge</a>
+      <a href="#speakers">Speakers</a>
+      <a href="#schedule">Schedule</a>
+      <a href="#organizers">Organizers</a>
+      <a href="#venue">Venue</a>
+    </div>
+    <a class="cta" href="#cfp">Submit a paper</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">AVEO 2026 · ICVGIP Workshop · Kolkata · 21 December 2026</p>
+      <h1 style="margin-top:18px">Adapting Vision Foundation and Embedding Models for <em>Earth Observation</em> at Scale</h1>
+      <p class="lede sub">Sixty-plus foundation models. A new generation of geospatial embeddings. Do they hold up on real floods, forests, and ice, at continental scale and where labels are scarce?</p>
+      <div class="actions">
+        <a class="btn primary" href="#cfp">Call for papers</a>
+        <a class="btn ghost" href="#challenge">Geospatial challenge</a>
+      </div>
+    </div>
+    <div class="mosaic" aria-label="Animated mosaic of land-cover tiles being scanned by a satellite swath">
+      <canvas id="tiles"></canvas>
+      <div class="legend mono">
+        <span><b style="background:var(--tile-w)"></b>Water</span>
+        <span><b style="background:var(--tile-v)"></b>Vegetation</span>
+        <span><b style="background:var(--tile-i)"></b>Ice</span>
+        <span><b style="background:var(--tile-b)"></b>Bare</span>
+        <span><b style="background:var(--tile-u)"></b>Built</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="strip mono">
+  <div class="wrap">
+    <div><small>Host</small>17th ICVGIP · Kolkata, India</div>
+    <div><small>Workshop day</small>Sun 21 Dec 2026 · Full day</div>
+    <div><small>Venue</small>Indian Statistical Institute · 22.6469°N 88.3789°E</div>
+    <div><small>Submissions</small>OpenReview · 8 pages · double blind</div>
+    <div><small>Program</small>3 invited talks · orals · challenge</div>
+  </div>
+</div>
+
+<main>
+<section id="about">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">About</p><h2>From benchmark scores to operational utility</h2></div>
+    <div class="cols">
+      <p class="lede">Earth observation has moved from task-specific models to general-purpose pretrained representations such as Google's Satellite Embeddings and TESSERA. This workshop puts the people who build them in the same room as the flood, forest, and glacier scientists who have to rely on them.</p>
+      <div class="promises">
+        <div><strong>Scale.</strong><span>Can one embedding drive continental mapping without region-by-region retraining?</span></div>
+        <div><strong>Scarcity.</strong><span>Do foundation models really cut the label budget in underrepresented geographies?</span></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">60<em>+</em></div><div class="l">vision foundation models now available for Earth observation</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">application test beds: hydrosphere, biosphere, cryosphere</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">invited talks from academia and industry</div></div>
+      <div class="stat"><div class="n">1</div><div class="l">full day: orals, challenge, and moderated developer–scientist dialogue</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="domains">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Application domains</p><h2>Three test beds</h2></div>
+    <div class="domains">
+      <div class="dom flood">
+        <p class="eyebrow" style="color:var(--flood)">Hydrosphere</p>
+        <p class="coord mono">e.g. Brahmaputra floodplain · 26.2°N 91.7°E</p>
+        <h3>Flood monitoring</h3><ul><li>Cross-sensor flood extent from Sentinel-1 and Sentinel-2</li><li>Transfer to basins with no historical labels</li><li>Uncertainty for decision support</li></ul>
+      </div>
+      <div class="dom forest">
+        <p class="eyebrow" style="color:var(--forest)">Biosphere</p>
+        <p class="coord mono">e.g. Western Ghats · 10.1°N 76.9°E</p>
+        <h3>Forest and land cover</h3><ul><li>Continental mapping from frozen embeddings</li><li>Few-shot class expansion for local land-cover schemes</li><li>Robustness across seasons and sensors</li></ul>
+      </div>
+      <div class="dom cryo">
+        <p class="eyebrow" style="color:var(--ice-ink)">Cryosphere</p>
+        <p class="coord mono">e.g. Sikkim Himalaya · 27.9°N 88.5°E</p>
+        <h3>Glaciers, glacial lakes, ice shelves</h3><ul><li>Glacial lake outburst flood risk screening</li><li>Debris-covered glacier delineation</li><li>Polar ice-shelf dynamics from multi-temporal data</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="topics">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Topics of interest</p><h2>Including, but not limited to</h2></div>
+    <div class="chips">
+      <span class="chip big">Remote Sensing and Geospatial Intelligence</span>
+      <span class="chip big">Adaptation and Fine-tuning of Foundation Models for Earth Observation</span>
+      <span class="chip big">Large-scale Earth Observation: continental and global mapping</span>
+      <span class="chip big">Data-scarce and Low-resource Earth Observation</span>
+      <span class="chip">Parameter-efficient Fine-tuning, Few-shot, Zero-shot and Transfer Learning</span>
+      <span class="chip">Self-, Weakly and Semi-supervised Learning for Remote Sensing</span>
+      <span class="chip">Flood Monitoring and Environmental Monitoring</span>
+      <span class="chip">Forest and Land Cover Mapping, Land-use Change Detection</span>
+      <span class="chip">Cryosphere: Glacier, Glacial Lake, Ice Sheet and Ice Shelf Monitoring</span>
+      <span class="chip">Multimodal and Multi-sensor EO: optical, SAR, multispectral, hyperspectral, temporal</span>
+      <span class="chip">Generalization, Domain Adaptation and Robustness across Regions, Sensors and Seasons</span>
+      <span class="chip">Evaluation, Benchmarking and Uncertainty Quantification</span>
+      <span class="chip">Scalability, Computational Efficiency and Operational Deployment</span>
+      <span class="chip">Interpretability, Explainability and Scientific Validity of Representations</span>
+      <span class="chip">Integrating Earth Science Knowledge with Foundation Models</span>
+      <span class="chip">Open Datasets, Benchmarks, Pretrained Models and Embeddings</span>
+      <span class="chip">Real-world Deployment, Decision Support and Operational EO Systems</span>
+      <span class="chip">Industry Applications and Academia–Industry Collaboration in Geospatial AI</span>
+    </div>
+  </div>
+</section>
+
+<section id="dates">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Important dates</p><h2>Timeline</h2></div>
+    <div class="track">
+      <div class="tk now"><div class="d">10 Oct 2026</div><div class="l">Call for papers open</div><div class="t mono">Website live</div></div>
+      <div class="tk"><div class="d">05 Nov 2026</div><div class="l">Paper submission deadline</div><div class="t mono">23:59 AoE · tentative</div></div>
+      <div class="tk"><div class="d">25 Nov 2026</div><div class="l">Notification to authors</div><div class="t mono">tentative</div></div>
+      <div class="tk"><div class="d">05 Dec 2026</div><div class="l">Camera-ready due</div><div class="t mono">tentative</div></div>
+      <div class="tk"><div class="d">21 Dec 2026</div><div class="l">Workshop day</div><div class="t mono">ISI Kolkata</div></div>
+    </div>
+    <p class="note">Dates marked tentative will be confirmed with the ICVGIP workshop chairs. All deadlines are Anywhere on Earth.</p>
+  </div>
+</section>
+
+<section id="cfp">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Call for papers</p><h2>What to submit, and how</h2></div>
+    <div class="cfp">
+      <div class="measure">
+        <p class="quiet">Original papers that evaluate, adapt, or deploy foundation and embedding models for real-world Earth observation. Negative results and application papers from Earth science groups are explicitly welcome.</p>
+        <ol class="steps">
+          <li>Write it in the official ICVGIP 2026 template, anonymized.</li>
+          <li>Submit on OpenReview (link posted when the call opens).</li>
+          <li>Reviewed by computer vision and Earth observation experts.</li>
+          <li>Accepted papers: short oral plus archival proceedings.</li>
+        </ol>
+      </div>
+      <div class="specs">
+        <div><b>Length</b><span>Up to 8 pages, excluding references</span></div>
+        <div><b>Template</b><span>Official ICVGIP 2026 paper template</span></div>
+        <div><b>Review</b><span>Double blind, multiple reviewers per paper</span></div>
+        <div><b>Platform</b><span>OpenReview (link to follow)</span></div>
+        <div><b>Proceedings</b><span>Archival, via the ICVGIP 2026 workshop proceedings</span></div>
+        <div><b>Presentation</b><span>Short oral by at least one registered author</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="challenge">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Challenge</p><h2>Geospatial model-making challenge</h2></div>
+    <div class="chal">
+      <div class="measure">
+        <span class="tag">Details announced with the call</span>
+        <p class="quiet" style="margin-top:14px">Adapt any public foundation or embedding model to a geospatial task. Scoring is on held-out regions, so geographic generalization decides the leaderboard.</p>
+      </div>
+      <div>
+        <p class="eyebrow">What to expect</p>
+        <ul>
+          <li>A released training split and a spatially disjoint test split</li>
+          <li>Freedom to use any public pretrained backbone or embedding</li>
+          <li>A short technical report from each participating team</li>
+          <li>Top entries present at the workshop</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="speakers">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Invited speakers</p><h2>Voices from both communities</h2></div>
+    <div class="people">
+      <div class="person"><div class="photo"><img src="img/ghamisi.jpg" alt="Pedram Ghamisi" loading="lazy" onerror="this.remove()"><span class="init">PG</span></div><div class="name">Pedram Ghamisi</div><div class="aff">Head of Responsible AI Group, Helmholtz-Zentrum Dresden-Rossendorf; Research Professor, University of Iceland; Visiting Professor, Lancaster University</div><div class="st">Invitation pending</div></div>
+      <div class="person"><div class="photo"><img src="img/chanussot.jpg" alt="Jocelyn Chanussot" loading="lazy" onerror="this.remove()"><span class="init">JC</span></div><div class="name">Jocelyn Chanussot</div><div class="aff">Professor, Grenoble Institute of Technology; AXA Chair of Remote Sensing, Chinese Academy of Sciences</div><div class="st">Invitation pending</div></div>
+      <div class="person"><div class="photo"><img src="img/li.jpg" alt="Jiaxin Li" loading="lazy" onerror="this.remove()"><span class="init">JL</span></div><div class="name">Jiaxin Li</div><div class="aff">School of Computer Science and Technology, Chongqing University of Posts and Telecommunications</div><div class="st">Invitation pending</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="schedule">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Tentative schedule</p><h2>Sunday, 21 December 2026</h2></div>
+    <table class="sched">
+      <tr><td>09:00–09:15</td><td class="k">Opening and framing</td><td>Why scale and data scarcity, and what the day should produce</td></tr>
+      <tr><td>09:15–10:00</td><td class="k">Invited talk I</td><td>Foundation models for Earth observation</td></tr>
+      <tr><td>10:00–11:00</td><td class="k">Contributed orals I</td><td>Adaptation and parameter-efficient fine-tuning</td></tr>
+      <tr class="brk"><td>11:00–11:20</td><td>Break</td><td></td></tr>
+      <tr><td>11:20–12:05</td><td class="k">Invited talk II</td><td>Multimodal and multi-sensor representations</td></tr>
+      <tr><td>12:05–13:00</td><td class="k">Contributed orals II</td><td>Large-scale mapping and generalization</td></tr>
+      <tr class="brk"><td>13:00–14:00</td><td>Lunch</td><td></td></tr>
+      <tr><td>14:00–14:45</td><td class="k">Invited talk III</td><td>Operational Earth observation and decision support</td></tr>
+      <tr><td>14:45–15:30</td><td class="k">Challenge session</td><td>Results, top-team presentations, lessons on geographic transfer</td></tr>
+      <tr class="brk"><td>15:30–15:50</td><td>Break</td><td></td></tr>
+      <tr><td>15:50–16:45</td><td class="k">Moderated discussion</td><td>Model developers and domain scientists: where do current models fall short?</td></tr>
+      <tr><td>16:45–17:00</td><td class="k">Closing</td><td>Shared agenda and next steps</td></tr>
+    </table>
+    <p class="note">Session order and titles will be finalized after the review process.</p>
+  </div>
+</section>
+
+<section id="organizers">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Organizing committee</p><h2>Organizers</h2></div>
+    <div class="people">
+      <div class="person"><div class="photo"><img src="img/aich.jpg" alt="Utathya Aich" loading="lazy" onerror="this.remove()"><span class="init">UA</span></div><div class="name">Utathya Aich</div><div class="aff">ML Engineer, CNH Industrial, India</div><div class="role">Primary contact</div></div>
+      <div class="person"><div class="photo"><img src="img/roy.jpg" alt="Swalpa Kumar Roy" loading="lazy" onerror="this.remove()"><span class="init">SKR</span></div><div class="name">Swalpa Kumar Roy</div><div class="aff">Associate Professor, Computer Science and Engineering, Tezpur University</div><div class="role">Primary contact</div></div>
+      <div class="person"><div class="photo"><img src="img/mandal.jpg" alt="Diptarka Mandal" loading="lazy" onerror="this.remove()"><span class="init">DM</span></div><div class="name">Diptarka Mandal</div><div class="aff">PhD Scholar, Mehta Family School of Data Science and AI, IIT Guwahati</div><div class="role">Organizer</div></div>
+      <div class="person"><div class="photo"><img src="img/kaushik.jpg" alt="Saurabh Kaushik" loading="lazy" onerror="this.remove()"><span class="init">SK</span></div><div class="name">Saurabh Kaushik</div><div class="aff">Postdoctoral Research Associate, University of Wisconsin–Madison</div><div class="role">Organizer</div></div>
+    </div>
+    <p class="note">Program committee to be announced. Contact: <a href="mailto:us4decaich@gmail.com">us4decaich@gmail.com</a> · <a href="mailto:swalpa@tezu.ernet.in">swalpa@tezu.ernet.in</a></p>
+  </div>
+</section>
+
+<section id="venue">
+  <div class="wrap">
+    <div class="head"><p class="eyebrow">Venue</p><h2>Kolkata, December 2026</h2></div>
+    <div class="venue">
+      <div class="vcard">
+        <div class="big">Indian Statistical Institute, Kolkata</div>
+        <p>Workshops and tutorials day of ICVGIP 2026, Sunday 21 December. Room to be announced.</p>
+        <p class="coord mono">203 B. T. Road, Kolkata 700108 · 22.6469°N 88.3789°E</p>
+      </div>
+      <div class="measure">
+        <p class="quiet">ICVGIP 2026 runs 21–24 December, hosted by the Indian Statistical Institute with TCG CREST. Workshops are on the first day at ISI; main sessions follow at IIT Kharagpur Research Park, Kolkata.</p>
+        <p class="quiet" style="margin-top:14px">Workshop attendance is through ICVGIP registration. See the <a href="https://icvgip.in/2026/" target="_blank" rel="noopener">main conference site</a> for registration and travel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b>AVEO 2026</b> · Adapting Vision Foundation and Embedding Models for Earth Observation Applications at Scale · ICVGIP 2026</span>
+    <span class="mono">Last updated 27 Sep 2026</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var c=document.getElementById('tiles');if(!c)return;
+  var ctx=c.getContext('2d');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var N=18, tiles=[], t=0, raf;
+  function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  var pal;
+  function palette(){pal={w:cssVar('--tile-w'),v:cssVar('--tile-v'),i:cssVar('--tile-i'),b:cssVar('--tile-b'),u:cssVar('--tile-u'),line:cssVar('--line'),acc:cssVar('--accent')};}
+  // deterministic value-noise landscape: rivers, forest, ice cap, settlements
+  function rnd(x,y){var s=Math.sin(x*127.1+y*311.7)*43758.5453;return s-Math.floor(s);}
+  function noise(x,y){var xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi;var a=rnd(xi,yi),b=rnd(xi+1,yi),c2=rnd(xi,yi+1),d=rnd(xi+1,yi+1);var u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);return a+(b-a)*u+(c2-a)*v+(a-b-c2+d)*u*v;}
+  function build(){
+    tiles=[];
+    for(var y=0;y<N;y++)for(var x=0;x<N;x++){
+      var e=noise(x/4.5,y/4.5)*0.7+noise(x/2,y/2)*0.3; // elevation
+      var river=Math.abs(Math.sin(x/3.2+y/6)+ (y/N-0.5)*1.4);
+      var k;
+      if(y<3 && e>0.45) k='i'; else if(river<0.14||e<0.28) k='w'; else if(e>0.72) k='b'; else if(rnd(x*3,y*7)>0.9) k='u'; else k='v';
+      tiles.push({k:k,e:e,ph:rnd(x,y)*6.28});
+    }
+  }
+  function size(){var r=c.getBoundingClientRect();var d=window.devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);}
+  function draw(){
+    var W=c.clientWidth,H=c.clientHeight,s=W/N;
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<tiles.length;i++){
+      var tl=tiles[i],x=(i%N)*s,y=Math.floor(i/N)*s;
+      ctx.fillStyle=pal[tl.k];
+      ctx.globalAlpha=0.78+0.22*Math.sin(t*0.6+tl.ph);
+      ctx.fillRect(x,y,s+0.5,s+0.5);
+    }
+    ctx.globalAlpha=1;
+    // faint grid
+    ctx.strokeStyle=pal.line;ctx.lineWidth=0.5;ctx.beginPath();
+    for(var g=0;g<=N;g++){ctx.moveTo(g*s,0);ctx.lineTo(g*s,H);ctx.moveTo(0,g*s);ctx.lineTo(W,g*s);}ctx.stroke();
+    // satellite swath sweep
+    var sx=((t*0.11)%1.3-0.15)*W;
+    var grad=ctx.createLinearGradient(sx-70,0,sx,0);
+    grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(1,pal.acc);
+    ctx.globalAlpha=0.35;ctx.fillStyle=grad;ctx.fillRect(sx-70,0,70,H);ctx.globalAlpha=1;
+    ctx.fillStyle=pal.acc;ctx.fillRect(sx,0,2,H);
+    // embedding readout: highlight the tile column under the swath
+    var col=Math.floor(sx/s);
+    if(col>=0&&col<N){ctx.strokeStyle=pal.acc;ctx.lineWidth=1.5;
+      for(var r=0;r<N;r++){var tt=tiles[r*N+col];if(tt.k==='w'||tt.k==='i'){ctx.strokeRect(col*s+1,r*s+1,s-2,s-2);}}}
+  }
+  function loop(){t+=0.016;draw();raf=requestAnimationFrame(loop);}
+  function start(){palette();size();build();if(reduce){t=3;draw();}else{cancelAnimationFrame(raf);loop();}}
+  start();
+  window.addEventListener('resize',function(){size();draw();});
+  if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){palette();draw();});}
+  new MutationObserver(function(){palette();draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
+</body>
+</html>
